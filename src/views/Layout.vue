@@ -29,7 +29,7 @@
             default-opened
             v-for="item in items"
             :key="item.title"
-            :to="item.url"
+            :to="item.path"
           >
             <q-expansion-item
               :header-inset-level="1"
@@ -39,7 +39,7 @@
               default-closed
               v-for="(menu, i) in item.subMenus"
               :key="i"
-              :to="menu.url"
+              :to="menu.path"
             ></q-expansion-item>
           </q-expansion-item>
         </q-list>
@@ -57,20 +57,34 @@ export default {
   data() {
     return {
       user: this.$store.state.user,
-      items: this.$store.state.menuList1
+      items: this.$store.state.menuList
     }
   },
   components: {},
-  created() {
-    console.log(this.items)
-  },
+  created() {},
   mounted() {},
   methods: {
     logout() {
-      alert('logout')
+      this.alert()
       localStorage.removeItem('token')
       this.$store.commit('setUser', null)
       this.$router.push('/login')
+    },
+    alert() {
+      this.$q
+        .dialog({
+          title: 'Alert',
+          message: '退出成功'
+        })
+        .onOk(() => {
+          // console.log('OK')
+        })
+        .onCancel(() => {
+          // console.log('Cancel')
+        })
+        .onDismiss(() => {
+          // console.log('I am triggered on both OK and Cancel')
+        })
     }
   },
   computed: {}

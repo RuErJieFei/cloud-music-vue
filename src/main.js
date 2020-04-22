@@ -3,6 +3,8 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import './quasar'
+import axios from 'axios'
+import VueAxios from 'vue-axios'
 
 Vue.config.productionTip = false
 
@@ -26,6 +28,19 @@ router.beforeEach((to, from, next) => {
       return next({ path: '/' })
     }
     next()
+  }
+})
+
+Vue.use(VueAxios, axios)
+
+import {
+  Quasar,
+  Dialog
+} from 'quasar'
+
+Vue.use(Quasar, {
+  plugins: {
+    Dialog
   }
 })
 

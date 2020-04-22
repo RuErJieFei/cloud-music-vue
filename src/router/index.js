@@ -23,7 +23,7 @@ const routes = [
         component: () => import('../views/About.vue')
       },
       {
-        path: '/music-list',
+        path: '/list',
         name: 'MusicList',
         component: () => import('../views/MusicList.vue')
       },
@@ -38,6 +38,21 @@ const routes = [
         component: () => import('../views/Role.vue')
       },
       {
+        path: '/type',
+        name: 'Type',
+        component: () => import('../views/Type.vue')
+      },
+      {
+        path: '/song',
+        name: 'Song',
+        component: () => import('../views/Song.vue')
+      },
+      {
+        path: '/permission',
+        name: 'Permission',
+        component: () => import('../views/Permission.vue')
+      },
+      {
         path: '/menu',
         name: 'Menu',
         component: () => import('../views/Menu.vue')
@@ -48,6 +63,11 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: () => import('../views/Login.vue')
+  },
+  {
+    path: '/choose',
+    name: 'ChooseRole',
+    component: () => import('../views/ChooseRole.vue')
   }
 ]
 

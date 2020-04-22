@@ -11,6 +11,7 @@
             hint="qq/微信/邮箱"
             lazy-rules
             :rules="[ val => val && val.length > 0 || '不能为空']"
+            @blur="getVerify"
           />
 
           <q-input
@@ -24,6 +25,22 @@
           val => val !== null && val !== '' || '不能为空'
         ]"
           />
+
+          <div v-if="state">
+            <img :src="verifyImg" @click="getVerify" />
+
+            <q-input
+              class="col-3"
+              dense
+              type="text"
+              v-model="verifyCode"
+              label="验证码"
+              lazy-rules
+              :rules="[
+          val => val !== null && val !== '' || '不能为空'
+        ]"
+            />
+          </div>
 
           <q-toggle v-model="accept" label="我同意用户条款" />
 
@@ -44,10 +61,16 @@ export default {
     return {
       menuList: [],
       openSimple: false,
-      username: null,
+      username: '',
       password: null,
-
-      accept: false
+      accept: false,
+      verifyCode: null,
+      verifyImg: null,
+      state: false,
+      token: null,
+      admin: {},
+      role: {},
+      roles: []
     }
   },
   components: {},
@@ -56,55 +79,59 @@ export default {
   methods: {
     onSubmit() {
       if (this.accept !== true) {
-        console.log('登陆失败')
+        this.$q.notify({
+          color: 'red-5',
+          textColor: 'white',
+          icon: 'warning',
+          message: '您需要首先接受许可和条款'
+        })
       } else {
-        console.log('成功')
-        //模拟后端接口数据
-        let user = {
-          userId: '1000100193',
-          username: 'baga',
-          userRole: 'admin',
-          avatar: 'https://ruerjiefei.oss-cn-hangzhou.aliyuncs.com/images/IMG_0682.jpeg'
-        }
-        this.menuList = [
-          { title: 'Dashboard', icon: 'mdi-view-dashboard', url: '/dashboard', subMenus: [] },
-          {
-            title: '音乐管理',
-            icon: 'mdi-music',
-            url: '',
-            subMenus: [
-              {
-                title: '歌单管理',
-                icon: 'mdi-domain',
-                url: '/music-list',
-                permissions: []
-              },
-              {
-                title: '歌曲管理',
-                icon: 'mdi-text',
-                url: '/music',
-                permissions: ['music:add', 'music:edit', 'music:delete']
-              }
-            ]
-          },
-          { title: 'About', icon: 'mdi-help-box', url: '/about', subMenus: [] }
-        ]
-        localStorage.setItem('token', 'EcIHTAWoGrmMVvTu2LPvuL-siq6hAfieVeehl-HTe_M')
-        localStorage.setItem('user', JSON.stringify(user))
-        localStorage.setItem('menuList', JSON.stringify(this.menuList))
-        this.$store.commit('setToken', 'EcIHTAWoGrmMVvTu2LPvuL-siq6hAfieVeehl-HTe_M')
-        this.$store.commit('setUser', user)
-        this.$store.commit('setMenuList', this.menuList)
+        this.axios
+          .post(this.$store.state.url + '/sysAdmin/login', {
+            name: this.username,
+            password: this.password,
+            verifyCode: this.verifyCode
+          })
+          .then((res) => {
+            this.token = res.data.data
+            localStorage.setItem('token', this.token)
+            let user = {
+              username: this.username
+            }
 
-        this.$router.push('/')
+            localStorage.setItem('user', JSON.stringify(user))
+
+            this.$store.commit('setUser', user)
+
+            this.$router.push('/choose')
+          })
+        this.$q.notify({
+          color: 'green-4',
+          textColor: 'white',
+          icon: 'cloud_done',
+          message: 'Submitted'
+        })
       }
     },
 
     onReset() {
-      this.$refs.form.clear()
-      this.username = null
-      this.password = null
+      this.username = ''
+      this.password = ''
       this.accept = false
+      this.verifyCode = ''
+    },
+
+    getVerify() {
+      this.axios
+        .get(this.$store.state.url + '/verify', {
+          params: {
+            name: this.username
+          }
+        })
+        .then((res) => {
+          this.verifyImg = res.data.data
+        })
+      this.state = true
     }
   },
   computed: {}
@@ -119,5 +146,9 @@ export default {
 }
 .form {
   width: 400px;
+}
+.col-3 {
+  display: inline-block;
+  margin-left: 30px;
 }
 </style>
