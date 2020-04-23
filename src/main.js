@@ -33,14 +33,11 @@ router.beforeEach((to, from, next) => {
 
 Vue.use(VueAxios, axios)
 
-import {
-  Quasar,
-  Dialog
-} from 'quasar'
+import { Quasar, QDrawer } from 'quasar'
 
 Vue.use(Quasar, {
-  plugins: {
-    Dialog
+  components: {
+    QDrawer
   }
 })
 

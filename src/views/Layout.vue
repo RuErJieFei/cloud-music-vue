@@ -1,80 +1,133 @@
 <template>
-  <div class="row">
-    <div class="q-pa-md col-12">
-      <q-toolbar class="bg-red text-white shadow-2 rounded-borders">
-        <div class="text-h4">cloud-music</div>
-        <q-space />
-
-        <q-tabs>
-          <q-tab name="tab1" label="Tab 1" />
-          <q-tab name="tab2" label="Tab 2" />
-          <q-tab name="tab3" label="Tab 3" />
-          <q-chip v-if="user">
-            <q-avatar @click="logout">
-              <img :src="user.avatar" />
-            </q-avatar>
-            {{ user.username}}
-          </q-chip>
-          <div class="text-subtitle1" v-else>登陆</div>
-        </q-tabs>
+  <q-layout view="hhh LpR ffr">
+    <!-- 导航头 -->
+    <q-header reveal elevated height-hint class="bg-red-8 text-white">
+      <q-toolbar>
+        <q-toolbar-title class="row justify-between">
+          <!-- 项目名字 -->
+          <span>Cloud Music</span>
+          <!-- 个人选项 -->
+          <div>
+            <q-chip v-if="user" class="avatar">
+              <!-- 下拉菜单 -->
+              <q-menu :offset="[50, 10]">
+                <q-list style="min-width: 100px">
+                  <q-item clickable v-close-popup>
+                    <q-item-section @click="logout">退出登陆</q-item-section>
+                  </q-item>
+                  <q-item clickable v-close-popup>
+                    <q-item-section>嘻嘻嘻嘻</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
+              <q-avatar>
+                <img :src="user.avatar" />
+              </q-avatar>
+              {{ user.username}}
+            </q-chip>
+          </div>
+        </q-toolbar-title>
       </q-toolbar>
-    </div>
-
-    <div class="list col-3">
-      <div class="q-pa-md" style="max-width: 350px">
-        <q-list bordered class="rounded-borders">
-          <q-expansion-item
-            icon="mail"
-            :label="item.title"
-            default-opened
-            v-for="item in items"
-            :key="item.title"
-            :to="item.path"
-          >
+    </q-header>
+    <!-- 左侧抽屉导航 -->
+    <q-drawer
+      show-if-above
+      :mini="miniState"
+      @mouseover="miniState = false"
+      @mouseout="miniState = true"
+      :width="200"
+      :breakpoint="500"
+      elevated
+      content-class="bg-black-3"
+    >
+      <q-scroll-area class="fit">
+        <q-list padding>
+          <div>
             <q-expansion-item
-              :header-inset-level="1"
+              :icon="item.icon"
+              :label="item.title"
+              :default-opened="false"
               expand-separator
-              icon="receipt"
-              :label="menu.title"
-              default-closed
-              v-for="(menu, i) in item.subMenus"
-              :key="i"
-              :to="menu.path"
-            ></q-expansion-item>
-          </q-expansion-item>
+              expand-icon-class="text-dark"
+              :header-style="{ color: '#ff0000' }"
+              v-for="(item, parentIndex) in items"
+              :key="parentIndex"
+              :to="item.path"
+            >
+              <q-separator />
+              <q-item
+                clickable
+                v-ripple
+                :icon="menu.icon"
+                :inset-level="0.5"
+                v-for="(menu, i) in item.subMenus"
+                :key="i"
+                :to="{ path: menu.path , query: {parentIndex: parentIndex ,index: i } }"
+                active-class="red"
+                class="row items-center"
+              >
+                <q-icon :name="menu.icon" size="24px" class="q-mr-lg" />
+                <q-item-section>{{menu.title}}</q-item-section>
+              </q-item>
+            </q-expansion-item>
+          </div>
         </q-list>
-      </div>
-    </div>
-    <div class="col-8">
+      </q-scroll-area>
+    </q-drawer>
+
+    <!-- 中间的主页面 -->
+    <q-page-container class="q-ma-xl full-height">
       <router-view />
-    </div>
-  </div>
+    </q-page-container>
+
+    <!-- 脚注 -->
+    <q-footer reveal elevated height-hint="150" class="bg-red-8 text-white no-wrap">
+      <q-toolbar>
+        <q-toolbar-title>L S T</q-toolbar-title>
+      </q-toolbar>
+    </q-footer>
+  </q-layout>
 </template>
+
+
 
 <script>
 export default {
   name: 'Layout',
   data() {
     return {
+      // 从vuex中取出用户
       user: this.$store.state.user,
-      items: this.$store.state.menuList
+      // 从vuex中取出菜单
+      items: this.$store.state.menuList,
+      // 菜单中的功能按钮
+      buttonList: [],
+      //左侧抽屉缩放
+      miniState: true
     }
   },
   components: {},
   created() {},
   mounted() {},
   methods: {
+    // 退出登陆
     logout() {
       this.alert()
       localStorage.removeItem('token')
       this.$store.commit('setUser', null)
       this.$router.push('/login')
     },
+    //退出提醒
     alert() {
       this.$q
         .dialog({
-          title: 'Alert',
-          message: '退出成功'
+          title: '提示',
+          style: 'color : #c23f38',
+          message: '退出成功',
+          ok: {
+            color: 'red-8',
+            label: 'OK'
+          }
         })
         .onOk(() => {
           // console.log('OK')
@@ -92,8 +145,13 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.list {
-  min-width: 300px !important;
-  margin-left: 2%;
+.avatar {
+  cursor: pointer;
+}
+.red {
+  color: #c3291c;
+}
+.height {
+  height: 30px;
 }
 </style>

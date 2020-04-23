@@ -23,7 +23,7 @@ const routes = [
         component: () => import('../views/About.vue')
       },
       {
-        path: '/list',
+        path: '/music-list',
         name: 'MusicList',
         component: () => import('../views/MusicList.vue')
       },
@@ -38,7 +38,7 @@ const routes = [
         component: () => import('../views/Role.vue')
       },
       {
-        path: '/type',
+        path: '/music-type',
         name: 'Type',
         component: () => import('../views/Type.vue')
       },
@@ -63,6 +63,16 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: () => import('../views/Login.vue')
+  },
+  {
+    path: '/404',
+    name: '404',
+    component: () => import('../views/Page404.vue')
+  },
+  {
+    path: '/z',
+    name: 'Test',
+    component: () => import('../views/ZZZ.vue')
   },
   {
     path: '/choose',

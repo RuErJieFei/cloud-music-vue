@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="row">
     <img class="img" src="../assets/images/dashborad.png" />
   </div>
 </template>
